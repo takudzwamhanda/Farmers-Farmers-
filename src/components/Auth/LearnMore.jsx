@@ -4,16 +4,16 @@ import './Auth.css'
 export function LearnMore({ onClose }) {
   return (
     <div className="auth-container">
-      <video 
-        className="auth-video-background" 
-        autoPlay 
-        muted 
-        loop 
-        playsInline
-      >
-        <source src="/background-vidz/5.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      {/* Enhanced Animated Background */}
+      <div className="auth-video-background"></div>
+      
+      {/* Floating Shapes Animation */}
+      <div className="floating-shapes">
+        <div className="floating-shape"></div>
+        <div className="floating-shape"></div>
+        <div className="floating-shape"></div>
+        <div className="floating-shape"></div>
+      </div>
       
       {/* Water Drops Animation */}
       <div className="water-drops-container">

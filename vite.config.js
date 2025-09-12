@@ -5,20 +5,20 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    // Increase timeout for large files
-    timeout: 30000,
-    // Enable CORS for video files
+    // Standard timeout for development
+    timeout: 10000,
+    // Enable CORS for assets
     cors: true,
   },
-  assetsInclude: ['**/*.mp4'],
   build: {
-    // Increase chunk size limit for video files
-    chunkSizeWarningLimit: 1000,
+    // Standard chunk size limit
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         manualChunks: {
-          // Separate video chunks
-          video: ['/background-vidz/1.mp4', '/background-vidz/2.mp4', '/background-vidz/3.mp4', '/background-vidz/4.mp4', '/background-vidz/5.mp4', '/background-vidz/6.mp4']
+          // Separate vendor chunks for better caching
+          vendor: ['react', 'react-dom'],
+          ui: ['lucide-react']
         }
       }
     }

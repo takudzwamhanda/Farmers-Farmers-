@@ -18,7 +18,7 @@ import { SignUp } from './components/Auth/SignUp'
 import { ForgotPassword } from './components/Auth/ForgotPassword'
 import { LearnMore } from './components/Auth/LearnMore'
 import { SupabaseTest } from './components/SupabaseTest'
-import { VideoTest } from './components/VideoTest'
+import { AnimationTest } from './components/AnimationTest'
 import './App.css'
 
 function AppContent() {
@@ -126,21 +126,21 @@ function AppContent() {
         ) : showAuth === 'test-connection' ? (
           <SupabaseTest />
         ) : showAuth === 'video-test' ? (
-          <VideoTest />
+          <AnimationTest />
         ) : showAuth === 'learn-more' ? (
           <LearnMore onClose={() => setShowAuth(null)} />
         ) : (
           <div className="auth-landing">
-            <video 
-              className="auth-landing-video" 
-              autoPlay 
-              muted 
-              loop 
-              playsInline
-            >
-              <source src="/background-vidz/5.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            {/* Enhanced Animated Background */}
+            <div className="auth-video-background"></div>
+            
+            {/* Floating Shapes Animation */}
+            <div className="floating-shapes">
+              <div className="floating-shape"></div>
+              <div className="floating-shape"></div>
+              <div className="floating-shape"></div>
+              <div className="floating-shape"></div>
+            </div>
             
             {/* Agricultural Animation Elements */}
             <div className="agriculture-animations">
