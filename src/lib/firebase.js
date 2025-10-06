@@ -23,9 +23,14 @@ if (hasRequiredEnv) {
   auth = getAuth(app)
 } else {
   // Avoid crashing the app during dev if env is missing
-  console.warn('Firebase environment variables missing. Set VITE_FIREBASE_* in .env.local')
+  // Provide a clearer message so developers know how to fix it
+  console.warn(
+    'Firebase environment variables missing. Copy env.example to .env.local and set VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_APP_ID, etc.'
+  )
 }
 
-export { auth }
+const firebaseConfigured = hasRequiredEnv
+
+export { auth, firebaseConfigured }
 
 

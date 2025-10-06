@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { auth } from '../lib/firebase'
+import { auth, firebaseConfigured } from '../lib/firebase'
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (!auth) {
       // Firebase not configured; keep user null but stop loading to let UI render
+      // This lets the app run without auth in development if env vars are missing
       setLoading(false)
       return
     }
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password, userData = {}) => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured')
+      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
       const cred = await createUserWithEmailAndPassword(auth, email, password)
       // Optionally set displayName and other profile fields
       if (userData && (userData.full_name || userData.displayName)) {
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured')
+      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
       const cred = await signInWithEmailAndPassword(auth, email, password)
       return { user: cred.user }
     } catch (error) {
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured')
+      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
       await firebaseSignOut(auth)
     } catch (error) {
       setError(error.message)
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (email) => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured')
+      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
       await sendPasswordResetEmail(auth, email)
     } catch (error) {
       setError(error.message || 'An unexpected error occurred. Please try again.')
@@ -97,6 +98,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     error,
+    firebaseConfigured,
     signUp,
     signIn,
     signOut,
