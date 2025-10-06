@@ -17,7 +17,6 @@ import { Login } from './components/Auth/Login'
 import { SignUp } from './components/Auth/SignUp'
 import { ForgotPassword } from './components/Auth/ForgotPassword'
 import { LearnMore } from './components/Auth/LearnMore'
-import { SupabaseTest } from './components/SupabaseTest'
 import { AnimationTest } from './components/AnimationTest'
 import './App.css'
 
@@ -123,8 +122,6 @@ function AppContent() {
             onSwitchToLogin={() => setShowAuth('login')} 
             onClose={() => setShowAuth(null)}
           />
-        ) : showAuth === 'test-connection' ? (
-          <SupabaseTest />
         ) : showAuth === 'video-test' ? (
           <AnimationTest />
         ) : showAuth === 'learn-more' ? (
