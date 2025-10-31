@@ -15,11 +15,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  // A simple in-memory mock user store used when Firebase isn't configured
+  const [devUsers, setDevUsers] = useState([])
 
   useEffect(() => {
     if (!auth) {
       // Firebase not configured; keep user null but stop loading to let UI render
-      // This lets the app run without auth in development if env vars are missing
+      // This lets the app run without auth in development if env vars are missing.
+      // We'll expose mock auth methods below so the UI can function in dev.
       setLoading(false)
       return
     }
@@ -33,7 +36,17 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password, userData = {}) => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
+      if (!auth) {
+        // Dev-mode mock sign up: store a fake user in-memory and set as current user
+        const fakeUser = {
+          uid: `dev-${Date.now()}`,
+          email,
+          displayName: userData.full_name || userData.displayName || null
+        }
+        setDevUsers(prev => [...prev, { email, password, user: fakeUser }])
+        setUser(fakeUser)
+        return { user: fakeUser }
+      }
       const cred = await createUserWithEmailAndPassword(auth, email, password)
       // Optionally set displayName and other profile fields
       if (userData && (userData.full_name || userData.displayName)) {
@@ -51,7 +64,17 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
+      if (!auth) {
+        // Dev-mode mock sign in: find matching in-memory user
+        const found = devUsers.find(u => u.email === email && u.password === password)
+        if (!found) {
+          const err = new Error('Invalid credentials (dev mock)')
+          setError(err.message)
+          throw err
+        }
+        setUser(found.user)
+        return { user: found.user }
+      }
       const cred = await signInWithEmailAndPassword(auth, email, password)
       return { user: cred.user }
     } catch (error) {
@@ -63,7 +86,11 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
+      if (!auth) {
+        // Dev-mode mock sign out
+        setUser(null)
+        return
+      }
       await firebaseSignOut(auth)
     } catch (error) {
       setError(error.message)
@@ -74,7 +101,10 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (email) => {
     try {
       setError(null)
-      if (!auth) throw new Error('Authentication not configured. Please set Firebase env vars (see env.example)')
+      if (!auth) {
+        // Dev-mode no-op for reset
+        return
+      }
       await sendPasswordResetEmail(auth, email)
     } catch (error) {
       setError(error.message || 'An unexpected error occurred. Please try again.')
@@ -85,6 +115,13 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (updates) => {
     try {
       setError(null)
+      if (!auth) {
+        // Dev-mode update profile: update in-memory user
+        if (!user) throw new Error('Not authenticated (dev mock)')
+        const updated = { ...user, ...updates }
+        setUser(updated)
+        return { user: updated }
+      }
       if (!auth.currentUser) throw new Error('Not authenticated')
       await firebaseUpdateProfile(auth.currentUser, updates)
       return { user: auth.currentUser }
